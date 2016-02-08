@@ -178,12 +178,18 @@ namespace WaveDev.SensitivCodeMarker
                 }
             }
 
-
-
+            // [RS] Collect member access expressions.
             var memberAccessExpressions = sourceNode.DescendantNodes().OfType<MemberAccessExpressionSyntax>();
+            foreach (var expression in memberAccessExpressions)
+            {
+                var typeInfo = semanticModel.GetTypeInfo(expression);
 
-            //memberAccessExpressions.First().Expression.
-            
+                if (typeInfo.Type != null)
+                {
+                    if (typeInfo.Type.AllInterfaces.Where(namedInterfaceType => namedInterfaceType.Name == "ISensitiveObject").Any())
+                        syntaxNodesWithFoundSymbols.Add(expression);
+                }
+            }
 
             return syntaxNodesWithFoundSymbols;
         }
