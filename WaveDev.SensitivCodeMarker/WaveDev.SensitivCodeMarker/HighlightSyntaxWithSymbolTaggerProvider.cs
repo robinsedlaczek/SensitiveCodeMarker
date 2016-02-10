@@ -4,7 +4,6 @@ using Microsoft.VisualStudio.Text.Editor;
 using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio.Text.Operations;
-using Microsoft.CodeAnalysis;
 
 namespace WaveDev.SensitivCodeMarker
 {
@@ -14,21 +13,17 @@ namespace WaveDev.SensitivCodeMarker
     internal class HighlightSyntaxWithSymbolTaggerProvider : IViewTaggerProvider
     {
         [Import]
-        internal ITextSearchService TextSearchService { get; set; }
-
-        [Import]
         internal ITextStructureNavigatorSelectorService TextStructureNavigatorSelector { get; set; }
 
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
         {
-            //provide highlighting only on the top buffer 
+            // Provide highlighting only on the top buffer.
             if (textView.TextBuffer != buffer)
                 return null;
 
-            ITextStructureNavigator textStructureNavigator =
-                TextStructureNavigatorSelector.GetTextStructureNavigator(buffer);
+            var textStructureNavigator = TextStructureNavigatorSelector.GetTextStructureNavigator(buffer);
 
-            return new HighlightSyntaxWithSymbolTagger(textView, buffer, TextSearchService, textStructureNavigator) as ITagger<T>;
+            return new HighlightSyntaxWithSymbolTagger(textView, buffer) as ITagger<T>;
         }
     }
 }
