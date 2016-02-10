@@ -141,7 +141,7 @@ namespace WaveDev.SensitivCodeMarker.Adornments
 
                 if (typeInfo.Type != null)
                 {
-                    if (typeInfo.Type.AllInterfaces.Where(namedInterfaceType => namedInterfaceType.Name == "ISensitiveObject").Any())
+                    if (typeInfo.Type.AllInterfaces.Where(namedInterfaceType => namedInterfaceType.Name == "ISensitiveObject").Any() && !IdentifierIsPartOfMemberAccessExpression(identifier, sensitiveSyntaxNodes))
                         sensitiveSyntaxNodes.Add(identifier);
                 }
                 else
@@ -152,13 +152,34 @@ namespace WaveDev.SensitivCodeMarker.Adornments
                     {
                         var namedType = symbolInfo.Symbol as INamedTypeSymbol;
 
-                        if (namedType != null && namedType.AllInterfaces.Where(namedInterfaceType => namedInterfaceType.Name == "ISensitiveObject").Any())
+                        if (namedType != null && namedType.AllInterfaces.Where(namedInterfaceType => namedInterfaceType.Name == "ISensitiveObject").Any() && !IdentifierIsPartOfMemberAccessExpression(identifier, sensitiveSyntaxNodes))
                             sensitiveSyntaxNodes.Add(identifier);
                     }
                 }
             }
 
             return sensitiveSyntaxNodes;
+        }
+
+        private static bool IdentifierIsPartOfMemberAccessExpression(IdentifierNameSyntax identifier, List<SyntaxNode> sensitiveSyntaxNodes)
+        {
+            SyntaxNode parent;
+
+            foreach (var node in sensitiveSyntaxNodes)
+            {
+                parent = identifier;
+
+                do
+                {
+                    if (parent == node)
+                        return true;
+
+                    parent = parent.Parent;
+                }
+                while (parent != null);
+            }
+
+            return false;
         }
 
         private void CreateSensitiveCodeMarkerVisuals(IList<SyntaxNode> sensitiveSyntaxNodes, ITextSnapshot newSnapshot)
