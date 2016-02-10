@@ -121,12 +121,13 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HighlightSyntaxWithSymbolFormatDefinition.cs" />
-    <Compile Include="HighlightSyntaxWithSymbolTag.cs" />
-    <Compile Include="HighlightSyntaxWithSymbolTagger.cs" />
-    <Compile Include="HighlightSyntaxWithSymbolTaggerProvider.cs" />
+    <Compile Include="Adornments\TextAdornment.cs" />
+    <Compile Include="Adornments\TextAdornmentTextViewCreationListener.cs" />
+    <Compile Include="Adornments\ViewportAdornment.cs" />
+    <Compile Include="Adornments\ViewportAdornmentTextViewCreationListener.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
