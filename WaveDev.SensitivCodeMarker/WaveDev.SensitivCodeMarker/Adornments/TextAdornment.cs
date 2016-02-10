@@ -83,8 +83,9 @@ namespace WaveDev.SensitivCodeMarker.Adornments
         internal void OnLayoutChanged(object sender, TextViewLayoutChangedEventArgs e)
         {
             var sensitiveSyntaxNodes = CollectSensitiveSyntaxNodes(e.NewSnapshot);
+            var sensitiveTextSpans = GetTextSpans(sensitiveSyntaxNodes, e.NewSnapshot);
 
-            CreateSensitiveCodeMarkerVisuals(sensitiveSyntaxNodes, e.NewSnapshot);
+            CreateSensitiveCodeMarkerVisuals(sensitiveTextSpans, e.NewSnapshot);
         }
 
         private static IList<SyntaxNode> CollectSensitiveSyntaxNodes(ITextSnapshot newSnapshot)
@@ -141,7 +142,7 @@ namespace WaveDev.SensitivCodeMarker.Adornments
 
                 if (typeInfo.Type != null)
                 {
-                    if (typeInfo.Type.AllInterfaces.Where(namedInterfaceType => namedInterfaceType.Name == "ISensitiveObject").Any() && !IdentifierIsPartOfMemberAccessExpression(identifier, sensitiveSyntaxNodes))
+                    if (typeInfo.Type.AllInterfaces.Where(namedInterfaceType => namedInterfaceType.Name == "ISensitiveObject").Any())
                         sensitiveSyntaxNodes.Add(identifier);
                 }
                 else
@@ -152,7 +153,7 @@ namespace WaveDev.SensitivCodeMarker.Adornments
                     {
                         var namedType = symbolInfo.Symbol as INamedTypeSymbol;
 
-                        if (namedType != null && namedType.AllInterfaces.Where(namedInterfaceType => namedInterfaceType.Name == "ISensitiveObject").Any() && !IdentifierIsPartOfMemberAccessExpression(identifier, sensitiveSyntaxNodes))
+                        if (namedType != null && namedType.AllInterfaces.Where(namedInterfaceType => namedInterfaceType.Name == "ISensitiveObject").Any())
                             sensitiveSyntaxNodes.Add(identifier);
                     }
                 }
@@ -161,36 +162,27 @@ namespace WaveDev.SensitivCodeMarker.Adornments
             return sensitiveSyntaxNodes;
         }
 
-        private static bool IdentifierIsPartOfMemberAccessExpression(IdentifierNameSyntax identifier, List<SyntaxNode> sensitiveSyntaxNodes)
+        private NormalizedSnapshotSpanCollection GetTextSpans(IList<SyntaxNode> syntaxNodes, ITextSnapshot newSnapshot)
         {
-            SyntaxNode parent;
+            var spans = new List<SnapshotSpan>();
 
-            foreach (var node in sensitiveSyntaxNodes)
-            {
-                parent = identifier;
-
-                do
-                {
-                    if (parent == node)
-                        return true;
-
-                    parent = parent.Parent;
-                }
-                while (parent != null);
-            }
-
-            return false;
-        }
-
-        private void CreateSensitiveCodeMarkerVisuals(IList<SyntaxNode> sensitiveSyntaxNodes, ITextSnapshot newSnapshot)
-        {
-            _layer.RemoveAllAdornments();
-
-            foreach (var node in sensitiveSyntaxNodes)
+            foreach (var node in syntaxNodes)
             {
                 var length = node.Span.End - node.Span.Start;
                 var span = new SnapshotSpan(newSnapshot, node.Span.Start, length);
 
+                spans.Add(span);
+            }
+
+            return new NormalizedSnapshotSpanCollection(spans);
+        }
+
+        private void CreateSensitiveCodeMarkerVisuals(NormalizedSnapshotSpanCollection sensitiveTextSpans, ITextSnapshot newSnapshot)
+        {
+            _layer.RemoveAllAdornments();
+
+            foreach (var span in sensitiveTextSpans)
+            {
                 IWpfTextViewLineCollection textViewLines = _view.TextViewLines;
 
                 var geometry = textViewLines.GetMarkerGeometry(span);
