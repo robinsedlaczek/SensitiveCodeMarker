@@ -118,19 +118,6 @@ namespace WaveDev.SensitivCodeMarker.Adornments
             var semanticModel = compilation.GetSemanticModel(tree);
             var treeRoot = tree.GetRoot() as CompilationUnitSyntax;
 
-            // [RS] Collect member access expressions.
-            var memberAccessExpressions = treeRoot.DescendantNodes().OfType<MemberAccessExpressionSyntax>();
-            foreach (var expression in memberAccessExpressions)
-            {
-                var typeInfo = semanticModel.GetTypeInfo(expression);
-
-                if (typeInfo.Type != null)
-                {
-                    if (typeInfo.Type.AllInterfaces.Where(namedInterfaceType => namedInterfaceType.Name == "ISensitiveObject").Any())
-                        sensitiveSyntaxNodes.Add(expression);
-                }
-            }
-
             // [RS] Collect identifier names.
             var identifiers = treeRoot.DescendantNodes().OfType<IdentifierNameSyntax>();
             foreach (var identifier in identifiers)

@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
+  <Metadata>
+    <Identity Id="WaveDev.SensitiveCodeMarker.Setup.Robin Sedlaczek.4991502b-f42d-413a-b742-75e57d3dada3" Version="1.0" Language="en-US" Publisher="Robin Sedlaczek" />
+    <DisplayName>WaveDev.SensitiveCodeMarker</DisplayName>
+    <Description xml:space="preserve">The Visual Studio extensions marks sensitive code in the editor.</Description>
+  </Metadata>
+  <Installation>
+    <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[14.0]" />
+  </Installation>
+  <Dependencies>
+    <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
+  </Dependencies>
+  <Assets>
+    <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" />
+    <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="WaveDev.SensitivCodeMarker" Path="|WaveDev.SensitivCodeMarker|" />
+  </Assets>
+</PackageManifest>
